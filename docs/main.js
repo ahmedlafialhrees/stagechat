@@ -1,22 +1,17 @@
-// main.js — نسخة متوافقة مع سفاري (بدون top-level await)
 (async function init() {
+  // تحميل THREE بمصدرين (بدون top-level await عشان سفاري)
   let THREE;
   try {
     THREE = await import('https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js');
-  } catch (e) {
-    try {
-      THREE = await import('https://unpkg.com/three@0.161.0/build/three.module.js');
-    } catch (e2) {
-      alert("تعذّر تحميل Three.js — جرّب إعادة تحميل الصفحة أو اتصال مختلف.");
-      return;
-    }
-  }
+  } catch { THREE = await import('https://unpkg.com/three@0.161.0/build/three.module.js'); }
+  if (!THREE) { alert("تعذّر تحميل Three.js"); return; }
 
   const { WebGLRenderer, Scene, Fog, PerspectiveCamera, HemisphereLight, DirectionalLight,
           PlaneGeometry, MeshStandardMaterial, Mesh, BoxGeometry, MeshBasicMaterial,
-          CylinderGeometry, PointLight, SphereGeometry, CapsuleGeometry, Vector3, Euler } = THREE;
+          CylinderGeometry, PointLight, SphereGeometry, CapsuleGeometry, Vector3, Euler,
+          ACESFilmicToneMapping, sRGBEncoding } = THREE;
 
-  /* عناصر الصفحة */
+  // عناصر
   const canvas = document.getElementById('scene');
   const hpEl = document.getElementById('hp');
   const scoreEl = document.getElementById('score');
@@ -30,12 +25,21 @@
   const stickRight = document.getElementById('stickRight');
   const shootTap = document.getElementById('shootTap');
 
-  /* إعداد المشهد */
+  // منع سحب/تحديث الصفحة
+  const block = e => e.preventDefault();
+  ['touchmove','gesturestart','dblclick'].forEach(ev => document.addEventListener(ev, block, {passive:false}));
+  window.addEventListener('scroll', ()=> scrollTo(0,0));
+  canvas.addEventListener('touchmove', block, {passive:false});
+
+  // مشهد
   const renderer = new WebGLRenderer({canvas, antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setSize(innerWidth, innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = sRGBEncoding;
+  renderer.toneMapping = ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
 
   const scene = new Scene();
   scene.fog = new Fog(0x0b1220, 40, 180);
@@ -44,17 +48,17 @@
   camera.position.set(0, 1.6, 5);
   scene.add(camera);
 
-  const hemi = new HemisphereLight(0x66aaff, 0x0b0f18, 0.6); scene.add(hemi);
-  const sun  = new DirectionalLight(0xffffff, 0.9);
+  const hemi = new HemisphereLight(0x8fc1ff, 0x0b0f18, 0.7); scene.add(hemi);
+  const sun  = new DirectionalLight(0xffffff, 1.0);
   sun.castShadow = true; sun.position.set(20,40,10); sun.shadow.mapSize.set(1024,1024);
   scene.add(sun);
 
-  /* أرض + مدينة خيال */
-  const ground = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({color:0x0f1724, metalness:0.1, roughness:1}));
+  // أرض + مدينة
+  const ground = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({color:0x101826, metalness:0.1, roughness:1}));
   ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
 
   const city = new THREE.Group();
-  const bMat   = new MeshStandardMaterial({color:0x0b6cff, emissive:0x072c6f, emissiveIntensity:.25, metalness:.6, roughness:.35});
+  const bMat   = new MeshStandardMaterial({color:0x0b6cff, emissive:0x072c6f, emissiveIntensity:.28, metalness:.55, roughness:.35});
   const glowMat= new MeshBasicMaterial({color:0x19d3ff});
   for (let x=-9; x<=9; x++) for (let z=-9; z<=9; z++) {
     if (Math.abs(x)<2 && Math.abs(z)<2) continue;
@@ -66,7 +70,7 @@
   }
   scene.add(city);
 
-  /* اللاعب + سلاح */
+  // لاعب + سلاح
   const player = {
     hpMax:100, hp:100, speed:7.5,
     pos:new Vector3(0,1.6,0), yaw:0, pitch:0, vel:new Vector3(),
@@ -75,20 +79,20 @@
   hpEl.textContent = player.hp;
 
   const gun = new THREE.Group();
-  const body   = new Mesh(new BoxGeometry(0.35,0.22,0.8), new MeshStandardMaterial({color:0x222831, metalness:.9, roughness:.2}));
-  body.position.set(0.3,-0.21,-0.7);
-  const barrel = new Mesh(new CylinderGeometry(0.05,0.05,0.6,16), new MeshStandardMaterial({color:0x2d89ef, emissive:0x1133aa, emissiveIntensity:.5, metalness:.8, roughness:.25}));
-  barrel.rotation.z=Math.PI/2; barrel.position.set(0.42,-0.19,-0.62);
-  const sight  = new Mesh(new BoxGeometry(0.12,0.06,0.16), new MeshStandardMaterial({color:0x444}));
-  sight.position.set(0.25,-0.12,-0.38);
+  const body   = new Mesh(new BoxGeometry(0.35,0.22,0.8), new MeshStandardMaterial({color:0x222831, metalness:.9, roughness:.25}));
+  body.position.set(0.32,-0.24,-0.72);
+  const barrel = new Mesh(new CylinderGeometry(0.05,0.05,0.6,16), new MeshStandardMaterial({color:0x89b4ff, emissive:0x2a4ad4, emissiveIntensity:.55, metalness:.85, roughness:.2}));
+  barrel.rotation.z=Math.PI/2; barrel.position.set(0.45,-0.2,-0.62);
+  const sight  = new Mesh(new BoxGeometry(0.12,0.06,0.16), new MeshStandardMaterial({color:0x555}));
+  sight.position.set(0.27,-0.12,-0.4);
   gun.add(body, barrel, sight); camera.add(gun);
 
   const muzzle = new PointLight(0xfff1a8, 0, 6, 1.5);
   muzzle.position.set(0.72,-0.2,-1.1); camera.add(muzzle);
 
-  /* رصاص + أعداء */
+  // رصاص + أعداء
   const bullets = []; const enemies = [];
-  let score=0, wave=1;
+  let score=0, wave=1, recoil=0;
   const bulletGeo=new SphereGeometry(0.05,12,12);
   const bulletMat=new MeshBasicMaterial({color:0xffffee});
 
@@ -99,6 +103,7 @@
     m.userData.vel=dir.multiplyScalar(28); m.userData.life=1.2;
     scene.add(m); bullets.push(m);
     muzzle.intensity=4.5; setTimeout(()=>muzzle.intensity=0,40);
+    recoil = 0.035;
   }
 
   const eGeo=new CapsuleGeometry(0.4,0.8,8,16);
@@ -121,7 +126,7 @@
     if (score>=wave*120){ wave++; waveEl.textContent=wave; }
   }
 
-  /* إدخال */
+  // إدخال
   const keys={};
   addEventListener('keydown', e=>keys[e.code]=true);
   addEventListener('keyup',   e=>keys[e.code]=false);
@@ -132,14 +137,19 @@
     if (matchMedia('(hover:hover)').matches) canvas.requestPointerLock && canvas.requestPointerLock();
   }
   document.addEventListener('pointerlockchange', ()=>{ pointerLocked=(document.pointerLockElement===canvas); });
+
+  // ماوس: فوق = فوق (عكسنا المحور)
   addEventListener('mousemove', e=>{
     if (!pointerLocked) return;
-    const s=0.0022; player.yaw-=e.movementX*s; player.pitch-=e.movementY*s; player.pitch=Math.max(-1.2, Math.min(1.2, player.pitch));
+    const s=0.0022;
+    player.yaw   -= e.movementX*s;
+    player.pitch += e.movementY*s;
+    player.pitch = Math.max(-1.2, Math.min(1.2, player.pitch));
   });
   addEventListener('mousedown', e=>{ if(running){ if(!pointerLocked) lockPointer(); if(e.button===0) shootPressed=true; }});
   addEventListener('mouseup',   e=>{ if(e.button===0) shootPressed=false; });
 
-  // لمس (عصاتين)
+  // لمس: عصتين – عكس عمودي مصحّح
   let moveTouchId=null, lookTouchId=null;
   const left={x:0,y:0,dx:0,dy:0}, right={x:0,y:0};
   function inEl(el,x,y){ const r=el.getBoundingClientRect(); return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom; }
@@ -150,7 +160,7 @@
       if(inEl(touchLeft,x,y)&&moveTouchId===null){ moveTouchId=t.identifier; left.x=x; left.y=y; left.dx=0; left.dy=0; setStick(stickLeft,0,0); }
       else if(inEl(touchRight,x,y)&&lookTouchId===null){ lookTouchId=t.identifier; right.x=x; right.y=y; setStick(stickRight,0,0); shootPressed=true; shootTap.classList.remove('hidden'); }
     }
-  },{passive:true});
+  },{passive:false});
   addEventListener('touchmove', e=>{
     for(const t of e.changedTouches){
       const x=t.clientX,y=t.clientY;
@@ -159,19 +169,22 @@
         left.dx=Math.max(-1,Math.min(1,dx)); left.dy=Math.max(-1,Math.min(1,dy)); setStick(stickLeft,left.dx,left.dy);
       } else if(t.identifier===lookTouchId){
         const dx=(x-right.x)/2.5, dy=(y-right.y)/2.5;
-        player.yaw-=dx*0.01; player.pitch-=dy*0.01; player.pitch=Math.max(-1.2,Math.min(1.2,player.pitch));
+        player.yaw -= dx*0.01;
+        player.pitch += dy*0.01; // قلبنا المحور
+        player.pitch=Math.max(-1.2,Math.min(1.2,player.pitch));
         right.x=x; right.y=y; setStick(stickRight,0,0);
       }
     }
-  },{passive:true});
+    e.preventDefault();
+  },{passive:false});
   addEventListener('touchend', e=>{
     for(const t of e.changedTouches){
       if(t.identifier===moveTouchId){ moveTouchId=null; left.dx=left.dy=0; setStick(stickLeft,0,0); }
       if(t.identifier===lookTouchId){ lookTouchId=null; shootPressed=false; shootTap.classList.add('hidden'); setStick(stickRight,0,0); }
     }
-  },{passive:true});
+  },{passive:false});
 
-  /* لعبة */
+  // لعبة
   function reset(){
     player.hp=player.hpMax; hpEl.textContent=player.hp;
     player.pos.set(0,1.6,0); player.vel.set(0,0,0); player.yaw=0; player.pitch=0;
@@ -190,6 +203,7 @@
     if(keys['KeyD']||keys['ArrowRight']) ix+=1;
     if(moveTouchId!==null){ ix+=left.dx; iz+=left.dy; }
     const len=Math.hypot(ix,iz)||1; ix/=len; iz/=len;
+
     const f=new Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw));
     const r=new Vector3(f.z,0,-f.x);
     player.vel.copy(f.multiplyScalar(-iz).add(r.multiplyScalar(ix))).multiplyScalar(player.speed);
@@ -197,6 +211,13 @@
     player.pos.x=Math.max(-34,Math.min(34,player.pos.x));
     player.pos.z=Math.max(-34,Math.min(34,player.pos.z));
     camera.position.copy(player.pos);
+
+    // اهتزاز/ميلان السلاح
+    const speedAmt = Math.min(1, player.vel.length()/player.speed);
+    recoil = Math.max(0, recoil - dt*5);
+    gun.position.y = -0.22 + Math.sin(performance.now()*0.01)*0.012*speedAmt - recoil;
+    gun.position.x =  0.32 + Math.sin(performance.now()*0.013)*0.008*speedAmt;
+    gun.rotation.z = Math.sin(performance.now()*0.01)*0.02*speedAmt;
   }
 
   function updateBullets(dt){
@@ -227,7 +248,7 @@
 
   function tryShoot(dt){
     player.fireCooldown-=dt;
-    if(shootPressed && player.fireCooldown<=0){ spawnBullet(); player.fireCooldown=player.fireRate; player.pitch-=0.007; }
+    if(shootPressed && player.fireCooldown<=0){ spawnBullet(); player.fireCooldown=player.fireRate; }
   }
 
   function step(ms){
@@ -252,6 +273,5 @@
   // Resize
   addEventListener('resize', ()=>{ renderer.setSize(innerWidth, innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); });
 
-  // إظهار شاشة البداية
   centerMsg.classList.add('show');
 })(); // end init
