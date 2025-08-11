@@ -26,13 +26,12 @@
     </div>
   </div>
 
-  <!-- مناطق لمس (تظهر على الجوال فقط) -->
+  <!-- عصاتي لمس للجوال -->
   <div id="touchLeft" class="touch-zone"><div class="stick" id="stickLeft"></div></div>
   <div id="touchRight" class="touch-zone"><div class="stick" id="stickRight"></div></div>
   <div id="shootTap" class="shoot-indicator hidden">🔫</div>
 
-  <!-- THREE.js من CDN -->
-  <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
-  <script src="main.js" type="module"></script>
+  <!-- نحمل اللعبة كـ Module. THREE تُحمّل ديناميكياً من داخل main.js -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>
