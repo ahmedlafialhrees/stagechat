@@ -1,38 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-  <title>Fantasy City 3D Shooter</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-  <canvas id="scene"></canvas>
-
-  <div id="ui">
-    <div class="hud">
-      <span>❤️ <b id="hp">100</b></span>
-      <span>🎯 نقاط: <b id="score">0</b></span>
-      <span>🌊 موجة: <b id="wave">1</b></span>
-    </div>
-    <div id="centerMsg" class="show">
-      <h1>Fantasy City 3D</h1>
-      <p>التحكّم على الكمبيوتر: WASD للحركة، الماوس للتصويب والزر الأيسر لإطلاق النار (بعد الضغط على ابدأ).</p>
-      <p>على الجوال: المس جهة اليسار للحركة — اسحب جهة اليمين للتصويب واضغط للإطلاق.</p>
-      <div class="btns">
-        <button id="startBtn">ابدأ</button>
-        <button id="restartBtn" class="hidden">إعادة</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- مناطق لمس (تظهر على الجوال فقط) -->
-  <div id="touchLeft" class="touch-zone"><div class="stick" id="stickLeft"></div></div>
-  <div id="touchRight" class="touch-zone"><div class="stick" id="stickRight"></div></div>
-  <div id="shootTap" class="shoot-indicator hidden">🔫</div>
-
-  <!-- THREE.js من CDN -->
-  <script src="https://unpkg.com/three@0.161.0/build/three.min.js"></script>
-  <script src="main.js" type="module"></script>
-</body>
-</html>
