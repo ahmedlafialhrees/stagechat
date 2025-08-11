@@ -1,31 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>War Web</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div id="ui">
-    <div class="hud">
-      <span>❤️ <b id="hp">100</b></span>
-      <span>🎯 نقاط: <b id="score">0</b></span>
-      <span>🌊 موجة: <b id="wave">1</b></span>
-    </div>
-    <div id="centerMsg" class="hidden">
-      <h1 id="title">War Web</h1>
-      <p id="subtitle">تحرّك بـ WASD — اضرب بالماوس</p>
-      <button id="startBtn">ابدأ</button>
-      <button id="restartBtn" class="hidden">إعادة</button>
-    </div>
-  </div>
-
-  <canvas id="game"></canvas>
-
-  <!-- عناصر لمس (مبسطة): لمس الشاشة يحرك اللاعب، لمس ثاني يطلق -->
-  <div id="touchHint">المس للتحرّك • لمس ثاني للإطلاق</div>
-
-  <script src="main.js"></script>
-</body>
-</html>
