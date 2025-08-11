@@ -1,6 +1,12 @@
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#070a0f;color:#e6f1ff;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-#scene{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+html,body{
+  margin:0;height:100%;
+  background:#070a0f;color:#e6f1ff;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  /* منع سحب/تحديث الصفحة */
+  overflow:hidden; overscroll-behavior:none;
+}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1;touch-action:none}
 
 /* UI */
 #ui{position:fixed;inset:0;pointer-events:none;z-index:3}
@@ -25,3 +31,7 @@ html,body{margin:0;height:100%;background:#070a0f;color:#e6f1ff;font-family:syst
   .touch-zone{display:block}
   #shootTap{display:block}
 }
+
+/* الهدف */
+#crosshair{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:3}
+#crosshair span{width:14px;height:14px;border-radius:50%;border:2px solid #bfe6ff;opacity:.85;box-shadow:0 0 8px #78d2ff}
