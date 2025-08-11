@@ -2,9 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
   <title>Fantasy City 3D Shooter</title>
-  <link rel="stylesheet" href="style.css?v=3"/>
+  <link rel="stylesheet" href="style.css?v=6"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
   <canvas id="scene"></canvas>
@@ -17,8 +22,8 @@
     </div>
     <div id="centerMsg" class="show">
       <h1>Fantasy City 3D</h1>
-      <p>التحكّم على الكمبيوتر: WASD للحركة، الماوس للتصويب والزر الأيسر لإطلاق النار (بعد الضغط على ابدأ).</p>
-      <p>على الجوال: المس جهة اليسار للحركة — اسحب جهة اليمين للتصويب واضغط للإطلاق.</p>
+      <p>كمبيوتر: WASD للحركة — الماوس للتصويب — كلك يسار للإطلاق (بعد “ابدأ”).</p>
+      <p>جوال: يسار حركة • يمين تسحب للتصويب وتضغط للإطلاق.</p>
       <div class="btns">
         <button id="startBtn">ابدأ</button>
         <button id="restartBtn" class="hidden">إعادة</button>
@@ -34,7 +39,7 @@
   <!-- هدف -->
   <div id="crosshair"><span></span></div>
 
-  <!-- نحمل اللعبة كـ Module -->
-  <script type="module" src="main.js?v=3"></script>
+  <!-- اللعبة -->
+  <script src="game.js?v=6"></script>
 </body>
 </html>
